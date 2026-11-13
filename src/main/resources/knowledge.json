@@ -1,0 +1,20 @@
+[
+  {"id": "bil-001", "category": "billing", "title": "Double charge",
+   "content": "If an invoice was charged twice, the second charge is reversed within 5 business days of the report. The customer does not need to do anything: the reversal appears as a credit on the payment method used. If after 5 days there is no reversal, the customer can ask for the case number.",
+   "keywords": ["charge", "double", "refund", "reversal"]},
+  {"id": "bil-002", "category": "billing", "title": "Invoice details",
+   "content": "The name and address on invoices are changed in the customer area, under Billing details. Invoicing a company requires its legal name and VAT number. The change applies from the next invoice: invoices already issued are not reissued.",
+   "keywords": ["invoice", "address", "company", "vat"]},
+  {"id": "tec-001", "category": "technical", "title": "Error 500 at login",
+   "content": "An error 500 at login means a problem on our servers, not in the customer's browser: clearing the cache does not help. Ongoing outages are published on the service status page. If the status page reports nothing, the ticket goes to second-level support with the time of the attempt.",
+   "keywords": ["error 500", "login", "sign in", "server"]},
+  {"id": "tec-002", "category": "technical", "title": "Exporting data",
+   "content": "Data is exported as CSV from Settings, Export. An export can take up to an hour for large archives; when it is ready an email arrives with the link, valid for 7 days.",
+   "keywords": ["export", "csv", "data", "backup"]},
+  {"id": "acc-001", "category": "account", "title": "Resetting the password",
+   "content": "The password is reset from the Forgot password link on the login page. The recovery email arrives within a few minutes: if it does not, check the spam folder and that the address is the registered one. After three failed attempts the account is locked for 30 minutes.",
+   "keywords": ["password", "recovery", "reset", "login"]},
+  {"id": "acc-002", "category": "account", "title": "Closing the account",
+   "content": "The account is closed from Settings, Close account. The data can be recovered for 30 days, then it is permanently deleted. Active subscriptions must be cancelled before closing.",
+   "keywords": ["close", "delete", "account", "cancel"]}
+]

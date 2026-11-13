@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drafts awaiting approval</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 52rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
+  article { border: 1px solid #ccc; border-radius: 6px; padding: 1rem; margin-bottom: 1.5rem; }
+  .meta { color: #666; font-size: .9rem; }
+  blockquote { margin: .5rem 0; padding: .5rem 1rem; background: #f4f4f4; white-space: pre-wrap; }
+  textarea { width: 100%; min-height: 10rem; font: inherit; box-sizing: border-box; }
+  button { margin: .5rem .5rem 0 0; padding: .4rem .9rem; }
+</style>
+</head>
+<body>
+<h1>Drafts awaiting approval</h1>
+<p id="empty" hidden>No draft awaiting approval.</p>
+<main id="drafts"></main>
+
+<template id="card">
+  <article>
+    <div class="meta"></div>
+    <h2></h2>
+    <blockquote class="request"></blockquote>
+    <p class="meta sources"></p>
+    <label>Proposed reply<textarea></textarea></label>
+    <button data-choice="APPROVE">Approve</button>
+    <button data-choice="MODIFY">Send corrected</button>
+    <button data-choice="REJECT">Reject</button>
+  </article>
+</template>
+
+<script>
+// List from /operator/drafts, decisions on /approvals/{requestId}
+async function load() {
+  const drafts = await (await fetch('operator/drafts')).json();
+  const container = document.getElementById('drafts');
+  container.replaceChildren();
+  document.getElementById('empty').hidden = drafts.length > 0;
+  for (const d of drafts) {
+    const card = document.getElementById('card').content.cloneNode(true);
+    card.querySelector('.meta').textContent =
+      `${d.category} · from ${d.sender} · expires ${new Date(d.expiresAt).toLocaleString()}`;
+    card.querySelector('h2').textContent = d.subject;
+    card.querySelector('.request').textContent = d.request;
+    card.querySelector('.sources').textContent =
+      d.sources.length ? `Knowledge used: ${d.sources.join(' · ')}` : 'No knowledge used';
+    const text = card.querySelector('textarea');
+    text.value = d.draft;
+    for (const button of card.querySelectorAll('button')) {
+      button.onclick = () => decide(d.requestId, button.dataset.choice, text.value);
+    }
+    container.append(card);
+  }
+}
+
+async function decide(requestId, choice, text) {
+  if (choice === 'REJECT') {
+    text = prompt('Reason for rejecting');
+    if (text === null) return;
+  }
+  const response = await fetch(`approvals/${requestId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ choice, text: choice === 'APPROVE' ? null : text })
+  });
+  if (!response.ok) alert(`Decision not recorded: HTTP ${response.status}`);
+  load();
+}
+
+load();
+</script>
+</body>
+</html>

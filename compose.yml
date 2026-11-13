@@ -1,0 +1,39 @@
+# Local development: PostgreSQL with pgvector (tickets, outbox, knowledge base, Agenor's directory
+# and approvals) and Ollama (LLM and embeddings). After the first `up`, pull the two models:
+#   curl --noproxy "*" localhost:11434/api/pull -d '{"model":"llama3.2","stream":false}'
+#   curl --noproxy "*" localhost:11434/api/pull -d '{"model":"nomic-embed-text","stream":false}'
+services:
+  postgres:
+    image: docker.io/pgvector/pgvector:pg16
+    container_name: agenor-example-helpdesk-postgres
+    environment:
+      POSTGRES_DB: helpdesk
+      POSTGRES_USER: helpdesk
+      POSTGRES_PASSWORD: helpdesk
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  # Only for running the agents on two nodes (README, "Two nodes")
+  valkey:
+    image: docker.io/valkey/valkey:8
+    container_name: agenor-example-helpdesk-valkey
+    ports:
+      - "6379:6379"
+
+  ollama:
+    image: docker.io/ollama/ollama:0.12.6
+    container_name: agenor-example-helpdesk-ollama
+    # Pulling models from behind a proxy: the host's, if it has one
+    environment:
+      HTTPS_PROXY: ${https_proxy:-}
+      NO_PROXY: ${no_proxy:-}
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+
+volumes:
+  postgres-data:
+  ollama-data:

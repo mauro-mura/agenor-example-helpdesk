@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.0.8</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>helpdesk</groupId>
+    <artifactId>agenor-example-helpdesk</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <name>agenor-example-helpdesk</name>
+    <description>Support ticket triage with an LLM, a knowledge base and human approval, built on Agenor</description>
+
+    <properties>
+        <java.version>21</java.version>
+        <agenor.version>0.41.0</agenor.version>
+        <!-- Boot 4.0.8 manages Jackson 2 at 2.21.5, below the 2.22.x that LangChain4j 1.20.0
+             (via agenor-adapters) requires -->
+        <jackson-2-bom.version>2.22.1</jackson-2-bom.version>
+        <!-- Optional in agenor-adapters and not in the Agenor BOM; Boot 4.0.8 manages 6.8.2, a major
+             below the 7.5.1 agenor-adapters is built against -->
+        <lettuce.version>7.5.1.RELEASE</lettuce.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>dev.agenor</groupId>
+                <artifactId>agenor-bom</artifactId>
+                <version>${agenor.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>dev.agenor</groupId>
+            <artifactId>agenor-spring-boot-starter</artifactId>
+        </dependency>
+        <!-- LLMAgent, guardrails -->
+        <dependency>
+            <groupId>dev.agenor</groupId>
+            <artifactId>agenor-runtime-llm</artifactId>
+        </dependency>
+        <!-- Knowledge and HITL types -->
+        <dependency>
+            <groupId>dev.agenor</groupId>
+            <artifactId>agenor-runtime-ext</artifactId>
+        </dependency>
+        <!-- Optional in the starter, required when agenor.llm.provider is not none -->
+        <dependency>
+            <groupId>dev.agenor</groupId>
+            <artifactId>agenor-adapters</artifactId>
+        </dependency>
+        <!-- Optional in the starter: JdbcApprovalGate and the JDBC directory; brings the
+             PostgreSQL driver and Flyway -->
+        <dependency>
+            <groupId>dev.agenor</groupId>
+            <artifactId>agenor-adapters-persistence</artifactId>
+        </dependency>
+        <!-- Without it agenor.messaging.provider=redis silently stays in memory -->
+        <dependency>
+            <groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!-- *IT classes are opt-in: -Dintegration.tests.enabled=true -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <skipITs>${skipITs}</skipITs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>no-its</id>
+            <activation>
+                <property>
+                    <name>!integration.tests.enabled</name>
+                </property>
+            </activation>
+            <properties>
+                <skipITs>true</skipITs>
+            </properties>
+        </profile>
+    </profiles>
+</project>

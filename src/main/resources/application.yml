@@ -1,0 +1,52 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: agenor-example-helpdesk
+  datasource:
+    url: jdbc:postgresql://localhost:5432/helpdesk
+    username: helpdesk
+    password: helpdesk
+
+agenor:
+  runtime:
+    name: agenor-example-helpdesk
+  # One schema: the directory and the approvals each keep a Flyway history of their own, and the
+  # approval gate reuses the directory's connection
+  directory:
+    provider: jdbc
+    jdbc:
+      url: ${spring.datasource.url}
+      username: ${spring.datasource.username}
+      password: ${spring.datasource.password}
+  hitl:
+    provider: jdbc
+  llm:
+    provider: ollama
+    model: llama3.2
+    base-url: http://localhost:11434
+
+helpdesk:
+  # Which agents this node runs: triager, specialists, or both. Every node accepts tickets; only
+  # one with the triager triages them
+  agents: triager,specialists
+  # How long the triager waits for the specialist's draft (not for the operator)
+  draft-timeout: PT2M
+  orphan-decisions:
+    interval: PT5S
+  embedding:
+    base-url: http://localhost:11434
+    model: nomic-embed-text
+    dimensions: 768
+  retry:
+    # LLM down or slow: try again after "delay", at most "attempts" times, then the manual queue
+    interval: PT1M
+    delay: PT2M
+    attempts: 3
+    # How long a node holds a ticket it is triaging; past it, any node with the triager takes it
+    # (the process stopped halfway). Longer than a triage takes: the LLM plus draft-timeout
+    abandoned-after: PT5M
+  knowledge:
+    # Reload knowledge.json: the documents that changed, or all of them if embeddings were down at start
+    reload: PT10M
