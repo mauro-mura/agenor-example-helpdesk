@@ -1,6 +1,6 @@
 # Local development: PostgreSQL with pgvector (tickets, outbox, knowledge base, Agenor's directory
 # and approvals) and Ollama (LLM and embeddings). After the first `up`, pull the two models:
-#   curl --noproxy "*" localhost:11434/api/pull -d '{"model":"llama3.2","stream":false}'
+#   curl --noproxy "*" localhost:11434/api/pull -d '{"model":"qwen3:4b-instruct","stream":false}'
 #   curl --noproxy "*" localhost:11434/api/pull -d '{"model":"nomic-embed-text","stream":false}'
 services:
   postgres:
@@ -23,7 +23,7 @@ services:
       - "6379:6379"
 
   ollama:
-    image: docker.io/ollama/ollama:0.12.6
+    image: docker.io/ollama/ollama:0.40.16
     container_name: agenor-example-helpdesk-ollama
     # Pulling models from behind a proxy: the host's, if it has one
     environment:

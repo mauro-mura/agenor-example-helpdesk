@@ -66,7 +66,7 @@ Needs Java 21, Maven, and podman or docker with their compose.
 
 ```bash
 podman compose up -d postgres ollama
-curl localhost:11434/api/pull -d '{"model":"llama3.2","stream":false}'
+curl localhost:11434/api/pull -d '{"model":"qwen3:4b-instruct","stream":false}'
 curl localhost:11434/api/pull -d '{"model":"nomic-embed-text","stream":false}'
 mvn spring-boot:run
 ```
@@ -145,6 +145,9 @@ export DOCKER_HOST=unix:///run/user/$UID/podman/podman.sock TESTCONTAINERS_RYUK_
   of embedding model the store refuses to search until its table is emptied and loaded again.
 - Only a local LLM has been tried: with a cloud provider, personal data the guardrail does not
   recognise leaves the machine.
+- The drafts come from a 4B model, on the CPU unless Ollama finds a GPU: expect the odd
+  placeholder (`[Customer Name]`), or a detail taken from a source rather than from the ticket.
+  Catching them is the operator's job, which is why nothing is sent without approval.
 
 ## License
 

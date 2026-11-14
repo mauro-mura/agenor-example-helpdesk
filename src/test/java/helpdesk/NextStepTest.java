@@ -19,7 +19,7 @@ class NextStepTest {
     @Test
     void aHostThatDoesNotResolveGoesToAPerson() {
         var host = new LLMException("Ollama request failed: unresolved", null, LLMException.ErrorType.NETWORK,
-                "Ollama", "llama3.2", null, false);
+                "Ollama", "qwen3:4b-instruct", null, false);
         assertThat(NextStep.after(host)).isEqualTo(NextStep.MANUAL);
     }
 

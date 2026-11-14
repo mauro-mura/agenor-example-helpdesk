@@ -24,7 +24,7 @@ agenor:
     provider: jdbc
   llm:
     provider: ollama
-    model: llama3.2
+    model: qwen3:4b-instruct
     base-url: http://localhost:11434
 
 helpdesk:

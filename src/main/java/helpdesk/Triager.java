@@ -26,10 +26,18 @@ public class Triager extends LLMAgent {
 
     private static final Logger log = LoggerFactory.getLogger(Triager.class);
 
+    /*
+     * A small local model given only the four names sends billing tickets elsewhere: one line per
+     * category says what belongs there. The line between technical and account follows the
+     * knowledge base: a sign-in that fails with an error is technical, the credentials are account.
+     */
     private static final String INSTRUCTIONS = """
             Classify the support ticket into exactly one of these categories:
-            billing, technical, account, other.
-            Answer with the category word only.""";
+            billing: money - what the customer pays, how and when: charges, refunds, invoices, prices, plans, payment methods;
+            technical: the product misbehaving - errors, crashes, slowness, features that do not work as expected;
+            account: who can sign in and how - password, sign-in codes, locked access, profile details, team members, closing the account;
+            other: anything that is not a request about the customer's own use of the service.
+            The ticket may be in any language. Answer with the category word only, in English.""";
 
     private final DialogueCapability dialogue = new DialogueCapability(this);
     private final LLMProvider llm;

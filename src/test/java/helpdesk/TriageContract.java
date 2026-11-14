@@ -196,8 +196,8 @@ abstract class TriageContract {
     /** An error that will not pass by itself (a model never pulled) goes to a person at once. */
     @Test
     void aMissingModelGoesStraightToTheManualQueue() throws Exception {
-        failing(new LLMException("model 'llama3.2' not found", null, LLMException.ErrorType.MODEL_NOT_FOUND,
-                "Ollama", "llama3.2", 404, false));
+        failing(new LLMException("model 'qwen3:4b-instruct' not found", null, LLMException.ErrorType.MODEL_NOT_FOUND,
+                "Ollama", "qwen3:4b-instruct", 404, false));
         Ticket ticket = newTicket();
 
         assertThat(triage.triage(ticket).get(10, TimeUnit.SECONDS)).isEqualTo(TicketState.MANUAL);
