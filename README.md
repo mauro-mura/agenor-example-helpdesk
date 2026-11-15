@@ -92,6 +92,16 @@ start the application starts anyway, and the next pass loads it.
 | `GET /operator/drafts` | pending drafts next to the ticket they answer |
 | `GET /approvals`, `POST /approvals/{requestId}` | `{choice: APPROVE \| MODIFY \| REJECT, text}` |
 
+To stop, press Ctrl+C where `mvn spring-boot:run` is running, then:
+
+```bash
+podman compose down       # removes the containers, Valkey too if you started it for two nodes
+podman compose down -v    # also deletes the tickets, the knowledge base and the downloaded models
+```
+
+After the first, `podman compose up -d postgres ollama` starts again with the data and the models
+where they were. After the second, pull the two models again.
+
 ## Two nodes
 
 `helpdesk.agents` chooses which agents a node runs. With the triager on one node and the
