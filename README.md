@@ -102,6 +102,34 @@ podman compose down -v    # also deletes the tickets, the knowledge base and the
 After the first, `podman compose up -d postgres ollama` starts again with the data and the models
 where they were. After the second, pull the two models again.
 
+## Ollama and PostgreSQL on another machine
+
+Nothing in the code points at `localhost`: each address is a property, so the application can use
+an Ollama and a PostgreSQL elsewhere on the network, with nothing started locally.
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.arguments="\
+  --agenor.llm.base-url=http://ai-server:11434 \
+  --helpdesk.embedding.base-url=http://ai-server:11434 \
+  --spring.datasource.url=jdbc:postgresql://ai-server:5432/helpdesk \
+  --spring.datasource.username=helpdesk --spring.datasource.password=helpdesk"
+```
+
+- The LLM and the embeddings are separate properties, and can be on two machines. Pull both
+  models on the one that serves them, with the `curl` above aimed at it.
+- PostgreSQL needs pgvector: the migration runs `CREATE EXTENSION vector`, and fails on a plain
+  `postgres` image. `compose.yml` runs `pgvector/pgvector:pg16`; the same image on the server will
+  do.
+- Give the application a database of its own. In one shared with other Agenor runtimes, it would
+  share with them Flyway's `flyway_schema_history`, the agent directory, and the approvals that
+  `GET /approvals` lists.
+- Ollama has no authentication, and the credentials in `compose.yml` are for a laptop: on a
+  network you do not trust, reach both through a firewall or an SSH tunnel
+  (`ssh -L 11434:localhost:11434 ai-server` keeps the defaults). Whatever the guardrail does not
+  recognise in a ticket travels to that machine.
+
+For two nodes, `agenor.messaging.redis.uri` points at the server's Redis or Valkey in the same way.
+
 ## Two nodes
 
 `helpdesk.agents` chooses which agents a node runs. With the triager on one node and the
