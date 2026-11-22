@@ -34,6 +34,9 @@ helpdesk:
   # How long the triager waits for the specialist's draft (not for the operator)
   draft-timeout: PT2M
   orphan-decisions:
+    # Carries out the decisions no future waits for any more, after a restart. Off, such a decision
+    # is recorded and nothing else happens: README, "A decision after a restart"
+    enabled: true
     interval: PT5S
   embedding:
     base-url: http://localhost:11434

@@ -102,6 +102,27 @@ podman compose down -v    # also deletes the tickets, the knowledge base and the
 After the first, `podman compose up -d postgres ollama` starts again with the data and the models
 where they were. After the second, pull the two models again.
 
+## A decision after a restart
+
+`OrphanDecisions` can be turned off, to see what it is there for. Send a ticket and wait for
+`AWAITING_APPROVAL`, as above. Stop the application with Ctrl+C, then start it again with the
+recovery off, and approve the draft that was waiting:
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.arguments="--helpdesk.orphan-decisions.enabled=false"
+curl -s localhost:8081/approvals                 # the requestId of the draft
+curl -s localhost:8081/approvals/<requestId> -H 'Content-Type: application/json' -d '{"choice":"APPROVE"}'
+curl -s localhost:8081/tickets/<id>/state        # still AWAITING_APPROVAL
+curl -s localhost:8081/tickets/<id>/outbox       # empty
+```
+
+The decision is recorded in the gate's table, and nothing else happens: the code that would have
+sent the reply was waiting in the process you stopped. Start the application again without the
+flag: within `helpdesk.orphan-decisions.interval` the reply is in the outbox, and the log says
+`carried out by the recovery`. It can be carried out by a process that never saw the draft
+because the request holds all it needs: the action, `send-reply`, and the whole draft as its
+payload.
+
 ## Ollama and PostgreSQL on another machine
 
 Nothing in the code points at `localhost`: each address is a property, so the application can use
@@ -165,7 +186,8 @@ network. `TriageContract` runs the whole flow, including the failures (LLM down,
 embeddings down, a decision taken after a restart, a draft slower than the triager's wait, two
 nodes claiming at once), once in memory and once with Redis messaging; `TwoNodeRedisIT` runs it
 across two nodes, and checks that a ticket received where there is no triager waits for the node
-that has one.
+that has one. `RecoveryOffIT` runs with `helpdesk.orphan-decisions.enabled=false`: a decision
+taken after a restart stays recorded and unsent, one whose future is still waiting is sent.
 
 They start their containers with Testcontainers; with podman, point them at its socket:
 

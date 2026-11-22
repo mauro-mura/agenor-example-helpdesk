@@ -28,6 +28,10 @@ import dev.agenor.core.hitl.ApprovalDecision;
  * <p>
  * A decision is carried out once whether it arrives from here or from the future
  * ({@link #executeOnce}).
+ * <p>
+ * {@code helpdesk.orphan-decisions.enabled=false} turns the recovery off, to see what happens
+ * without it: a decision taken after a restart is recorded, and the reply never leaves. Decisions
+ * whose future is still waiting are carried out as before.
  */
 @Component
 public class OrphanDecisions {
@@ -38,14 +42,23 @@ public class OrphanDecisions {
     private final TransactionTemplate transaction;
     private final ObjectProvider<DecisionExecutor> executors;
     private final String table;
+    private final boolean enabled;
 
-    /** @param table the gate's table, schema-qualified if needed */
+    /**
+     * @param table   the gate's table, schema-qualified if needed
+     * @param enabled whether {@link #recover} runs; {@link #executeOnce} works either way
+     */
     public OrphanDecisions(JdbcClient jdbc, TransactionTemplate transaction, ObjectProvider<DecisionExecutor> executors,
-                           @Value("${helpdesk.orphan-decisions.table:agenor_hitl_requests}") String table) {
+                           @Value("${helpdesk.orphan-decisions.table:agenor_hitl_requests}") String table,
+                           @Value("${helpdesk.orphan-decisions.enabled:true}") boolean enabled) {
         this.jdbc = jdbc;
         this.transaction = transaction;
         this.executors = executors;
         this.table = table;
+        this.enabled = enabled;
+        if (!enabled) {
+            log.warn("Recovery of approval decisions is off: a decision taken after a restart will not be carried out");
+        }
     }
 
     /** Runs {@code action} unless decision {@code requestId} has already been carried out. */
@@ -63,6 +76,9 @@ public class OrphanDecisions {
 
     @Scheduled(fixedDelayString = "${helpdesk.orphan-decisions.interval:PT5S}")
     public void recover() {
+        if (!enabled) {
+            return;
+        }
         // Looked up here and not in the constructor: an executor calls executeOnce, so it depends on us
         Map<String, DecisionExecutor> executors = this.executors.orderedStream()
                 .collect(Collectors.toUnmodifiableMap(DecisionExecutor::action, Function.identity()));

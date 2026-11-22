@@ -302,15 +302,20 @@ abstract class TriageContract {
         assertThat(sentOnce(ticket)).isEqualTo("Corrected text.");
     }
 
-    /** A draft sent for approval by a gate that then closes, as a stopped JVM would. */
     private Ticket pendingBeforeTheRestart() {
-        Ticket ticket = newTicket();
+        return pendingBeforeTheRestart(tickets, database());
+    }
+
+    /** A draft sent for approval by a gate that then closes, as a stopped JVM would. */
+    static Ticket pendingBeforeTheRestart(TicketStore tickets, PostgreSQLContainer database) {
+        Ticket ticket = ticket();
+        tickets.saveClaimed(ticket, Duration.ofHours(1));
         tickets.queueDraft(ticket.id());
         Draft draft = new Draft(ticket.id(), "technical", ticket.sender(), "Re: " + ticket.subject(),
                 "Draft written before the restart.", List.of());
-        String url = jdbcBase(database());
+        String url = jdbcBase(database);
         JdbcApprovalGate gateBeforeTheRestart = new JdbcApprovalGate(
-                new DriverManagerDataSource(url, database().getUsername(), database().getPassword()), url);
+                new DriverManagerDataSource(url, database.getUsername(), database.getPassword()), url);
         gateBeforeTheRestart.requestApproval(ApprovalRequest.of("specialist-technical", ReplySender.ACTION, draft,
                 Duration.ofHours(8), Map.of("ticketId", ticket.id().toString())));
         gateBeforeTheRestart.close();
