@@ -13,7 +13,7 @@
 
     <groupId>helpdesk</groupId>
     <artifactId>agenor-example-helpdesk</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <name>agenor-example-helpdesk</name>
     <description>Support ticket triage with an LLM, a knowledge base and human approval, built on Agenor</description>
 
