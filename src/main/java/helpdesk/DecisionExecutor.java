@@ -4,7 +4,7 @@ import dev.agenor.core.hitl.ApprovalDecision;
 
 /**
  * Carries out the decisions taken on one approval {@code action}, including those no future is
- * waiting for any more. Part of {@link OrphanDecisions}: Agenor 0.41 has no contract for "whoever acts
+ * waiting for any more. Part of {@link OrphanDecisions}: Agenor 0.42 has no contract for "whoever acts
  * on a decision taken after a restart".
  */
 public interface DecisionExecutor {

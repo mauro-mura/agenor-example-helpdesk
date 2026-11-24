@@ -21,7 +21,7 @@ import dev.agenor.core.hitl.ApprovalDecision;
  * Why this class exists: the future returned by {@code ApprovalGate.requestApproval} lives only in
  * the JVM that created it ({@code hitl-persistence.md}, "Local-future constraint"). After a
  * restart, a decision taken on a request that is still {@code PENDING} is recorded in the gate's
- * table, and nothing else happens. Agenor 0.41 has no way to hand such a decision to whoever should act
+ * table, and nothing else happens. Agenor 0.42 has no way to hand such a decision to whoever should act
  * on it, so this class reads the gate's table, whose schema {@code hitl-persistence.md} documents,
  * and passes each decision to the {@link DecisionExecutor} of its {@code action}. It knows nothing
  * about tickets.

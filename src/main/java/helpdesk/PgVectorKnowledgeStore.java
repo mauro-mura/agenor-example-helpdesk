@@ -19,7 +19,7 @@ import dev.agenor.core.knowledge.KnowledgeStore;
  * A {@link KnowledgeStore} on PostgreSQL with pgvector: documents survive a restart and are
  * searched by cosine similarity between embeddings.
  * <p>
- * Why this class exists: in Agenor 0.41 the only store is {@code InMemoryKnowledgeStore}, which
+ * Why this class exists: in Agenor 0.42 the only store is {@code InMemoryKnowledgeStore}, which
  * matches keywords and is empty after a restart, and there is no adapter for vector databases
  * ({@code knowledge.md}, "What this is not"). Nothing here is specific to tickets: the category
  * goes through two functions.

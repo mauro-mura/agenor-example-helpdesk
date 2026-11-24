@@ -27,7 +27,7 @@ import jakarta.annotation.PreDestroy;
  * take, so two nodes never triage the same ticket at once, and a ticket left halfway by a stopped
  * process is taken again when its claim runs out.
  * <p>
- * In Agenor 0.41 the dead letter queue does not fit here: it records and does not retry, and it
+ * In Agenor 0.42 the dead letter queue does not fit here: it records and does not retry, and it
  * collects messages whose handlers fail, while triage fails inside a future. The ticket is already
  * in PostgreSQL, so its state lives there.
  */

@@ -7,7 +7,7 @@ import dev.agenor.core.knowledge.EmbeddingProvider;
 
 /**
  * A deterministic embedding for tests: each word increments one of 256 dimensions, then the vector
- * is normalised. Two texts with words in common are close, with no network. Agenor 0.41 has a
+ * is normalised. Two texts with words in common are close, with no network. Agenor 0.42 has a
  * scripted {@code LLMProvider} for tests but no fake {@code EmbeddingProvider}.
  */
 class FakeEmbeddings implements EmbeddingProvider {

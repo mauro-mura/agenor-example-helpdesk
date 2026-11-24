@@ -18,7 +18,7 @@ import dev.agenor.core.hitl.ApprovalRequest;
  * The smallest operator interface over an {@link ApprovalGate}: the pending requests, and a
  * decision on one.
  * <p>
- * Why this class exists: the console of Agenor 0.41 has no view of approvals, so an application exposes
+ * Why this class exists: the console of Agenor 0.42 has no view of approvals, so an application exposes
  * them itself. Nothing here is specific to tickets; {@link OperatorController} is the part that is.
  */
 @RestController

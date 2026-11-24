@@ -14,7 +14,7 @@ import dev.agenor.core.knowledge.KnowledgeStore;
 public class KnowledgeConfig {
 
     /**
-     * In Agenor 0.41 the starter builds an {@code LLMProvider} from {@code agenor.llm.*} but no
+     * In Agenor 0.42 the starter builds an {@code LLMProvider} from {@code agenor.llm.*} but no
      * {@code EmbeddingProvider}, so the application builds its own.
      */
     @Bean

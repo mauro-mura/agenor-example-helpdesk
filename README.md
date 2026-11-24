@@ -1,6 +1,6 @@
 # agenor-example-helpdesk
 
-A helpdesk built on [Agenor](https://github.com/mauro-mura/agenor) 0.41.0 and Spring Boot 4. A
+A helpdesk built on [Agenor](https://github.com/mauro-mura/agenor) 0.42.0 and Spring Boot 4. A
 **triager** agent classifies each incoming ticket with an LLM and hands it to the **specialist**
 for its category; the specialist writes a draft reply from a knowledge base searched by meaning,
 and the draft reaches the customer only after a human operator approves, corrects or rejects it.
@@ -44,7 +44,7 @@ started from a `main` method, each built to show part of Agenor's API. This is a
 it runs under Spring Boot, keeps tickets, knowledge and approvals in PostgreSQL, comes through a
 restart with decisions still pending, and runs unchanged on one node or two.
 
-## What the application writes because Agenor 0.41 does not have it
+## What the application writes because Agenor 0.42 does not have it
 
 None of these classes knows about tickets: any application with the same needs would write them.
 
